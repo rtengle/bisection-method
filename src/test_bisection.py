@@ -1,23 +1,18 @@
-from src.bisection import bisection
+from bisection import bisection
+import pytest
 
-def run_tests():
-    # Runs all tests and prints out the result
-    print(default_test())
-    print(quartic_test())
-    print(double_input_test())
-    print(bad_bounds_test())
-    print(step_test())
+@pytest.mark.timeout(300)
 
-def default_test():
+def test_default():
     # Basic test of a window w/ one zero
     a = -2
     b = 5
     def f(x):
         return x*(2**x)
     x0, y0 = bisection(f, a, b)
-    return f(x0)
+    assert abs(f(x0)) <= 1e-3
 
-def quartic_test():
+def test_quartic():
     # Test of a window w/ multiple zeros
     a = -0.5
     b = 3
@@ -25,35 +20,33 @@ def quartic_test():
         return x**4 - 2*x**3 - x**2 + x
     
     x0, y0 = bisection(f, a, b)
-    return x0, y0
+    assert abs(f(x0)) <= 1e-3
 
-def double_input_test():
+def test_double_input():
     # Tests checking how many inputs a function can have
     a = -3
     b = 6
     def f(x, y):
         return x + y
-
-    try: 
-        bisection(f, a, b)
-        return "Failed"
-    except Exception as e:
-        return e
     
-def bad_bounds_test():
+    with pytest.raises(Exception) as exc_info:
+        bisection(f, a, b)
+
+    assert "input" in str(exc_info.value)
+    
+def test_bad_bounds():
     # Tests the bound-checking
     a = 4
     b = 1
     def f(x):
         return x + 3
     
-    try: 
+    with pytest.raises(Exception) as exc_info:
         bisection(f, a, b)
-        return "Failed"
-    except Exception as e:
-        return e
     
-def step_test():
+    assert "Sign" in str(exc_info.value)
+    
+def test_step():
     # Tests what happens if there's no zero in the window
     a = -5
     b = 4
@@ -65,4 +58,4 @@ def step_test():
             return 1
         
     x0, y0 = bisection(f, a, b)
-    return x0, y0
+    pass

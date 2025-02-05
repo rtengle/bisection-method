@@ -86,5 +86,3 @@ def validate_input(f, a, b, tol, N):
     # Checks the maximum number of loops
     if N <= 0:
         raise Exception("N must be a positive integer.")
-    
-# yml test comment
